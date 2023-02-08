@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
-
 import parser from 'node-html-parser';
+import escapeHTML from './escapeHtml.js';
 
 async function getURLPreview(url){
     let data = await fetch(url);
@@ -20,7 +20,7 @@ function processAsHTML(data, url) {
   metaTags.filter((e) => {
     return (/^og:/g).test(e.attributes.property)
   }).forEach((e) => {
-    typeMap[e.attributes.property] = e.attributes.content;
+    typeMap[e.attributes.property] = escapeHTML(e.attributes.content);
   });
 
   let template = `
