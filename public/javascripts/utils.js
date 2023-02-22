@@ -1,3 +1,14 @@
+
+const escapeHTML = str => !str ? str : str.replace(/[&<>'"]/g, 
+    tag => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+    }[tag]));
+
+
 async function fetchJSON(route, options){
     let response
     try{
@@ -5,7 +16,7 @@ async function fetchJSON(route, options){
             method: options && options.method ? options.method : "GET",
             body: options && options.body ? JSON.stringify(options.body) : undefined,
             headers: options && options.body ? {'Content-Type': 'application/json'}: undefined
-        })
+        });
     }catch(error){
         displayError()
         throw new Error(
@@ -15,13 +26,24 @@ async function fetchJSON(route, options){
     let responseJson;
     try{
         responseJson = await response.json();
+        
     }catch(error){
-        let responseText = await response.text();
+        try{
+            let responseText = await response.text();
+        }catch(getTextError){
+            displayError()
+            throw new Error(
+                `Error fetching ${route} with options: ${options ? JSON.stringify(options) : options}
+                Status: ${response.status}
+                Couldn't get response body
+                error: ${getTextError}`)
+        }
         displayError()
         throw new Error(
             `Error fetching ${route} with options: ${options ? JSON.stringify(options) : options}
             Status: ${response.status}
-            Response wasn't json: ${responseText ? JSON.stringify(responseText) : responseText}`)
+            Response wasn't json: ${responseText ? JSON.stringify(responseText) : responseText}
+            error: ${getTextError}`)
     }
     if(response.status < 200 || response.status >= 300 || responseJson.status == "error"){
         displayError()
@@ -40,4 +62,17 @@ async function displayError(){
     await new Promise(resolve => setTimeout(resolve, 4 * 1000))
     document.getElementById('errorInfo').innerText= ''
     document.getElementById('errorInfo').style.opacity = 0
+}
+
+function createPostsHtml(postsJson){
+    let postsHtml = postsJson.map(postInfo => {
+        return `
+        <div class="post">
+            ${postInfo.description}
+            ${postInfo.htmlPreview}
+            <div><a href="/userInfo.html?user=${encodeURIComponent(postInfo.username)}">${escapeHTML(postInfo.username)}</a></div>
+        </div>`
+    }).join("\n");
+
+    return postsHtml;
 }

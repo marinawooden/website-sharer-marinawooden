@@ -14,7 +14,7 @@ await mongoose.connect(
 const postSchema = new mongoose.Schema({
   url: String,
   description: String,
-  poster: String,
+  username: String,
   created_date: {
     type: Date,
     default: new Date,

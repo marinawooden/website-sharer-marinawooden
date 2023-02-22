@@ -7,28 +7,22 @@
   <script src="javascripts/api_version.js"></script>
   <script src="javascripts/utils.js"></script>
   <script src="javascripts/identity.js"></script>
-  <script src="javascripts/index.js"></script>
+  <script src="javascripts/userInfo.js"></script>
 </head>
 
 <body onload="init()">
   <nav class="navbar navbar-light bg-light">
     <div id="errorInfo" class="alert alert-danger fade show" role="alert" style="opacity:0"></div>
+    <div><a href="/">Return to Homepage</a></div>
     <div id="identity_div">loading...</div>
   </nav>
   <h1>Website Sharer</h1>
-  <h2>Posts:</h2>
-  <button onclick="loadPosts()">refresh</button>
+  
+  <h2>Info for user: <span id="username-span"></span></h2>
+
+  <h2>All Posts</h2>
+  <button onclick="loadUserInfo()">refresh</button>
   <div id="posts_box"></div>
-  <hr>
-  <hr>
-  <div id="make_post_div" class="d-none">
-    <h2>Post new website:</h2>
-    <p>Enter a description of your post (e.g., your reason for sharing)</p>
-    <input type="text" id="descriptionInput"/>
-    <p>Enter the website url</p><input type="text" id="urlInput" />
-    <button onclick="postUrl()">Post</button> <span id="postStatus"></span>
-    <div id="url_previews"></div>
-  </div>
 </body>
 
 </html>
