@@ -15,6 +15,17 @@ const postSchema = new mongoose.Schema({
   url: String,
   description: String,
   username: String,
+  likes: [String],
+  created_date: {
+    type: Date,
+    default: new Date,
+  }
+});
+
+const commentSchema = new mongoose.Schema({
+  username: String,
+  comment: String,
+  post: String, // might not work
   created_date: {
     type: Date,
     default: new Date,
@@ -22,5 +33,6 @@ const postSchema = new mongoose.Schema({
 });
 
 models.Post = mongoose.model('postScheme', postSchema, 'postScheme');
+models.Comments = mongoose.model('commentScheme', commentSchema, 'commentScheme');
 
 export default models

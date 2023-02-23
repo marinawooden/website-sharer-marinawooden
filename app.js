@@ -12,7 +12,7 @@ const appSettings = {
         clientSecret:  "9SC8Q~tiEnAS8QXYmhZC-XfQiHIHZl0qjGkp7di~"
     },	
     authRoutes: {
-        redirect: "localhost:3000/redirect", //note: you can explicitly make this "localhost:3000/redirect" or "examplesite.me/redirect"
+        redirect: "http://mwoode.com/redirect", //note: you can explicitly make this "localhost:3000/redirect" or "examplesite.me/redirect"
         error: "/error", // the wrapper will redirect to this route in case of any error.
         unauthorized: "/unauthorized" // the wrapper will redirect to this route in case of unauthorized access attempt.
     }

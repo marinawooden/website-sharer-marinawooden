@@ -16,7 +16,7 @@ async function fetchJSON(route, options){
             method: options && options.method ? options.method : "GET",
             body: options && options.body ? JSON.stringify(options.body) : undefined,
             headers: options && options.body ? {'Content-Type': 'application/json'}: undefined
-        });
+        })
     }catch(error){
         displayError()
         throw new Error(
@@ -26,7 +26,6 @@ async function fetchJSON(route, options){
     let responseJson;
     try{
         responseJson = await response.json();
-        
     }catch(error){
         try{
             let responseText = await response.text();
@@ -62,17 +61,4 @@ async function displayError(){
     await new Promise(resolve => setTimeout(resolve, 4 * 1000))
     document.getElementById('errorInfo').innerText= ''
     document.getElementById('errorInfo').style.opacity = 0
-}
-
-function createPostsHtml(postsJson){
-    let postsHtml = postsJson.map(postInfo => {
-        return `
-        <div class="post">
-            ${postInfo.description}
-            ${postInfo.htmlPreview}
-            <div><a href="/userInfo.html?user=${encodeURIComponent(postInfo.username)}">${escapeHTML(postInfo.username)}</a></div>
-        </div>`
-    }).join("\n");
-
-    return postsHtml;
 }
