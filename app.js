@@ -3,20 +3,9 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 
+import bcrypt from "bcrypt";
+
 import sessions from 'express-session'
-import msIdExpress from 'microsoft-identity-express'
-const appSettings = {
-    appCredentials: {
-        clientId:  "0a06c2d0-f4e0-4171-a7c1-4c3e47171f41",
-        tenantId:  "f6b6dd5b-f02f-441a-99a0-162ac5060bd2",
-        clientSecret:  "9SC8Q~tiEnAS8QXYmhZC-XfQiHIHZl0qjGkp7di~"
-    },	
-    authRoutes: {
-        redirect: "http://mwoode.com/redirect", //note: you can explicitly make this "localhost:3000/redirect" or "examplesite.me/redirect"
-        error: "/error", // the wrapper will redirect to this route in case of any error.
-        unauthorized: "/unauthorized" // the wrapper will redirect to this route in case of unauthorized access attempt.
-    }
-};
 
 import models from "./models.js";
 
@@ -26,7 +15,6 @@ import apiV3Router from './routes/api/v3/apiv3.js';
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { ppid } from 'process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -47,9 +35,6 @@ app.use(sessions({
     resave: false
 }))
 
-const msid = new msIdExpress.WebAppAuthClientBuilder(appSettings).build()
-app.use(msid.initialize())
-
 app.use((req, res, next) => {
     req.models = models
     next();
@@ -59,20 +44,68 @@ app.use('/api/v1', apiV1Router);
 app.use('/api/v2', apiV2Router);
 app.use('/api/v3', apiV3Router);
 
-app.get('/signin', 
-    msid.signIn({postLoginRedirect: '/'})
-)
+app.post("/login", async (req, res) => {
+    console.log(req.body);
+    if (req.body && req.body["email"] && req.body["pass"]) {
+        let user = await req.models.Auth.findOne({"email": req.body["email"]});
+        if (user) {
+          try {
+            if (await bcrypt.compare(req.body["pass"], user["password"])) {
+                req.session.userId = user["_id"];
+                req.session.username = user["email"];
+                req.session.isAuthenticated = true;
+        
+                res.type('text').send(user["_id"]);
+                } else {
+                res.type('text').status(404).send("Wrong password!");
+                }
+            } catch (err) {
+                res.type('text').status(500).send("There was an error on the server!")
+            }
+        } else {
+            res.type('text').status(401).send("This account isn't registered yet!");
+        }
+    } else {
+        res.type('text').status(400).send("Missing necessary user input!");
+    }
+});
 
-app.get('/signout',
-    msid.signOut({postLogoutRedirect: '/'})
-)
+app.post("/register", async (req, res) => {
+    if (req.body && req.body["email"] && req.body["pass"]) {
+        try {
+            let hashedPass = await bcrypt.hash(req.body["pass"], 10);
+            let newAuth = new req.models.Auth({
+            "email": req.body["email"],
+            "password": hashedPass,
+            });
+        
+            await newAuth.save();
 
-app.get('/error', (req, res) => {
-    res.status(500).send("Error: Server error")
-})
+            req.session.userId = newAuth["_id"];
 
-app.get('/unauthorized', (req, res) => {
-    res.status(401).send("Error: Unauthorized")
-})
+            let newUserInfo = new req.models.Users({
+                "email": req.body["email"]
+            })
+
+            await newUserInfo.save();
+
+            res.type('text').send("Success!");
+        } catch (err) {
+            console.log(err);
+            res.type('text').status(500).send("There was an error on the server")
+        }
+    } else {
+        res.type('text').status(400).send("Missing necessary user input!");
+    }
+});
+
+app.post("/logout", async (req, res) => {
+    if (!req.session.userid) {
+        req.session.destroy();
+        res.type('text').send("Success");
+    } else {
+        res.type('text').status(400).send("You aren't logged in.");
+    }
+});
 
 export default app;

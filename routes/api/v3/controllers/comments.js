@@ -20,7 +20,7 @@ router.post("/", async (req, res) => {
   if (req.session.isAuthenticated) {
     try {
       let newComment = new req.models.Comments({
-        "username": req.session.account.username,
+        "username": req.session.username,
         "comment": req.body.newComment,
         "post": req.body.postID
       });

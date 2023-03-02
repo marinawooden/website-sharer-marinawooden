@@ -11,6 +11,29 @@ await mongoose.connect(
   }
 )
 
+const authSchema = new mongoose.Schema({
+  email: String,
+  password: String,
+})
+
+const userSchema = new mongoose.Schema({
+  email: String,
+  favorites: {
+    website: {
+      type: String,
+      default: null
+    },
+    "npm-package": {
+      type: String,
+      default: null
+    },
+    database: {
+      type: String,
+      default: null
+    }
+  }
+})
+
 const postSchema = new mongoose.Schema({
   url: String,
   description: String,
@@ -32,6 +55,8 @@ const commentSchema = new mongoose.Schema({
   }
 });
 
+models.Users = mongoose.model('userScheme', userSchema, 'userScheme');
+models.Auth = mongoose.model('authScheme', authSchema, 'authScheme');
 models.Post = mongoose.model('postScheme', postSchema, 'postScheme');
 models.Comments = mongoose.model('commentScheme', commentSchema, 'commentScheme');
 

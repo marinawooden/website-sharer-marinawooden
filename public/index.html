@@ -8,12 +8,92 @@
   <script src="javascripts/utils.js"></script>
   <script src="javascripts/identity.js"></script>
   <script src="javascripts/index.js"></script>
+  <style>
+    .hidden {
+      display: none !important;
+    }
+
+    #login-screen {
+      position: absolute;
+      background-color: rgba(0, 0, 0, 0.259);
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #login-screen form {
+      background-color: white;
+      border: 1px solid rgb(133, 133, 133);
+      border-radius: 10px;
+      padding: 10px;
+      height: 30vw;
+      width: 30vw;
+      max-width: 300px;
+      max-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    #login-screen div {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      margin: 5px 0;
+    }
+
+    #login-screen input {
+      border: 1px solid lightgrey;
+    }
+  </style>
 </head>
 
 <body onload="init()">
+  <div id="login-screen" class="hidden">
+    <form id="login" class="hidden">
+      <h2>Log In</h2>
+      <div>
+        <label for="email">Email</label>
+        <input type="text" name="email" required/>
+      </div>
+      <div>
+        <label for="email">Password</label>
+        <input type="password" name="pass" required/>
+      </div>
+      <button class="btn btn-primary">Log In</button>
+      <p onclick="showRegisterPage()">
+        <small>Don't have an account? Register here</small>
+      </p>
+    </form>
+    <form id="register" class="hidden">
+      <h2>Register</h2>
+      <div>
+        <label for="email">Email</label>
+        <input type="text" name="email" required/>
+      </div>
+      <div>
+        <label for="email">Password</label>
+        <input type="text" name="pass" required/>
+      </div>
+      <button class="btn btn-primary">Register</button>
+      <p onclick="showLoginPage()">
+        <small>Already registered? Log in</small>
+      </p>
+    </form>
+  </div>
   <nav class="navbar navbar-light bg-light">
     <div id="errorInfo" class="alert alert-danger fade show" role="alert" style="opacity:0"></div>
-    <div id="identity_div">loading...</div>
+    <div id="identity_div">
+      <button id="signin" onclick="showLoginPage()" class="btn btn-primary">Log in</button>
+      <button id="signout" onclick="logout()" class="btn btn-danger hidden">Log out</button>
+    </div>
   </nav>
   <h1>Website Sharer</h1>
   <h2>Posts:</h2>

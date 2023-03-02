@@ -25,9 +25,21 @@
   <br>
   <div id="user_info_new_div" class="d-none">
     <h3>Update User Info:</h3>
-    TODO: For A7, add input fields here here (saveUserInfo function in userInfo.js)
-    <br>
-    <button onclick="saveUserInfo()">Save User Info</button>
+    <form id="userinfo">
+      <div>
+        <label for="website">All-time favorite website</label>
+        <input type="url" name="website">
+      </div>
+      <div>
+        <label for="npm-package">Favorite npm package</label>
+        <input type="text" name="npm-package">
+      </div>
+      <div>
+        <label for="database">Favorite database</label>
+        <input type="text" name="database">
+      </div>
+      <button class="btn btn-secondary">Update</button>
+    </form>
   </div>
   <br><br>
   <h2>All Posts</h2>

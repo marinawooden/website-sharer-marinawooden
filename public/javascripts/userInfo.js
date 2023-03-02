@@ -1,13 +1,44 @@
+const FAVORITESINFO = {
+    "website": "website of all time",
+    "npm-package": "NPM Package",
+    "database": "database"
+}
+
 async function init(){
     await loadIdentity();
     loadUserInfo();
+
+    document.getElementById("userinfo").addEventListener("submit", saveUserInfo)
 }
 
-async function saveUserInfo(){
-    //TODO: do an ajax call to save whatever info you want about the user from the user table
-    //see postComment() in the index.js file as an example of how to do this
+async function saveUserInfo(e){
+    e.preventDefault();
+    let params = new FormData(e.currentTarget)
+   try {
+    let res = await fetch(`/api/${apiVersion}/users/me/update`, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({"favorites": Object.fromEntries(params)})
+    });
+    await statusCheck(res);
+
+    location.reload();
+
+   } catch (err) {
+    console.error(err);
+   }
 }
 
+async function statusCheck(res) {
+    if (!res.ok) {
+        throw new Error(res);
+    }
+
+    return res;
+}
 async function loadUserInfo(){
     const urlParams = new URLSearchParams(window.location.search);
     const username = urlParams.get('user');
@@ -21,8 +52,36 @@ async function loadUserInfo(){
     }
     
     //TODO: do an ajax call to load whatever info you want about the user from the user table
+    try {
+        let res = await fetch(`/api/${apiVersion}/users/${username}/info`);
+        await statusCheck(res);
+
+        res = await res.json();
+        displayInfo(res);
+    } catch (err) {
+        console.error(err);
+    }
+
 
     loadUserInfoPosts(username)
+}
+
+function displayInfo(res) {
+    let toDisplayIn = document.getElementById("user_info_div");
+    toDisplayIn.innerHTML = "";
+
+    Object.keys(FAVORITESINFO).forEach((elem) => {
+        let span = document.createElement("strong");
+        let sentence = document.createElement("p");
+
+        let favorite = res[elem] ? res[elem] : "I don't know!";
+
+        span.textContent = `Favorite ${FAVORITESINFO[elem]}? `;
+        sentence.textContent = favorite;
+
+        sentence.prepend(span);
+        toDisplayIn.appendChild(sentence);
+    });
 }
 
 

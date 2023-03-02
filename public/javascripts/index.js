@@ -4,13 +4,26 @@ async function init(){
     urlInput.onchange = previewUrl;
     urlInput.onclick = previewUrl;
 
-    await loadIdentity();
     loadPosts();
+    // myIdentity = getCookie("userid");
+
+    await loadIdentity();
+    
+    document.getElementById("login").addEventListener("submit", login)
+    document.getElementById("register").addEventListener("submit", register)
 }
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
 
 async function loadPosts(){
     document.getElementById("posts_box").innerText = "Loading...";
     let postsJson = await fetchJSON(`api/${apiVersion}/posts`)
+
+    console.log(myIdentity);
     
     let postsHtml = postsJson.map(postInfo => {
         return `

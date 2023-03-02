@@ -12,7 +12,7 @@ router.post("/", async (req, res) => {
         let post = new req.models.Post({
           "url": req.body["url"],
           "description": req.body["description"],
-          "username": req.session.account.username,
+          "username": req.session.username,
         });
   
         await post.save();
@@ -74,8 +74,8 @@ router.post("/like", async (req, res) => {
     try {
       let postData = await req.models.Post.findById(req.body.postID);
       console.log(postData);
-      if (!postData.likes.includes(req.session.account.username)) {
-        postData.likes.push(req.session.account.username);
+      if (!postData.likes.includes(req.session.username)) {
+        postData.likes.push(req.session.username);
         await postData.save();
       }
 
@@ -83,6 +83,7 @@ router.post("/like", async (req, res) => {
         "status": "success"
       });
     } catch (err) {
+      console.log(err);
       res.status(500).json({
         "status": "error",
         "error": err
@@ -100,8 +101,8 @@ router.post("/unlike", async (req, res) => {
   if (req.session.isAuthenticated) {
     try {
       let postData = await req.models.Post.findById(req.body.postID);
-      if (postData.likes.includes(req.session.account.username)) {
-        postData.likes = removeFromArray(postData.likes, req.session.account.username);
+      if (postData.likes.includes(req.session.username)) {
+        postData.likes = removeFromArray(postData.likes, req.session.username);
         await postData.save();
       }
 
@@ -128,7 +129,7 @@ router.delete("/", async (req, res) => {
   if (req.session.isAuthenticated) {
     try {
       let postData = await req.models.Post.findById(req.body.postID);
-      if (postData.username !== req.session.account.username) {
+      if (postData.username !== req.session.username) {
         res.status(401).json({
           "status": "error",
           "error": "you can only delete your own posts"
